@@ -58,7 +58,6 @@ for (const file of commandFiles) {
 }
 
 
-
 client.player = new Player(client, {
     ytdlOptions: {
         quality: 'highestaudio',
@@ -73,7 +72,7 @@ client.player = new Player(client, {
 client.on('ready', async () => {
     const guild_ids = client.guilds.cache.map(guild => guild.id);
     const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
-    console.log('player', client.player)
+
 
     for (const guild_id of guild_ids) 
     {
@@ -82,6 +81,19 @@ client.on('ready', async () => {
             .catch(console.error);
     }
 });
+
+client.on('guildCreate', async () => {
+    const guild_ids = client.guilds.cache.map(guild => guild.id);
+    const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
+
+    for (const guild_id of guild_ids) {
+        rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, guild_id), { body: commands })
+            .then(() => console.log(`added commands to guild ${guild_id}, commnds: ${commands.length}`))
+            .catch(console.error);
+    }
+});
+
+
 
 
 client.on('interactionCreate', async interaction => {
